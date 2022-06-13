@@ -1,21 +1,24 @@
 const jwt = require("jsonwebtoken");
 const { UserModel } = require("../models");
-
-module.exports.auth = async (req, res, next) => {
+const ErrorResponse = require("../utils/error.js")
+const asyncHandler=require("../utils/asyncHandler.js");
+const auth = asyncHandler(async (req, res, next) => {
   let token = req.headers["authorization"];
   if (token == undefined) {
-    return res.status(401).json({ success:false,message: "Unauthorized" });
+    throw new ErrorResponse("Unauthorized",401);
+
   }
   try {
     const { id } = jwt.verify(token, "secret");
     const user = await UserModel.findById(id);
 
     if (!user) {
-      return res.status(401).json({ success:false,message: "Unauthorized" });
+        throw new ErrorResponse("Unauthorized",401);
     }
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ success:false,message: "Unauthorized" });
+    throw new ErrorResponse("Unauthorized",401);
   }
-};
+});
+module.exports=auth;

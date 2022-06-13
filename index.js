@@ -5,7 +5,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const config = dotenv.config();
-
+const errorHandler = require("./middleware/error-handler.js")
 const {
   UserRoutes,
 } = require("./routes");
@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/user", UserRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-
+app.use(errorHandler);
 mongoose
   .connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,

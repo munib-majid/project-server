@@ -1,14 +1,17 @@
 const jwt = require("jsonwebtoken");
+const ErrorResponse = require("../utils/error.js")
+const asyncHandler=require("../utils/asyncHandler.js");
 
-module.exports.admin = async (req, res, next) => {
+const admin = asyncHandler( async (req, res, next) => {
 
   try {
     let user=req.user;
     if (!user.admin) {
-      return res.status(401).json({success:false, message: "Unauthorized" });
+        throw new ErrorResponse("Forbidden",403);
     }
     next();
   } catch (error) {
-    return res.status(401).json({ success:false,message: "Unauthorized" });
-  }
-};
+    throw new ErrorResponse("Forbidden",403);
+}
+});
+module.exports=admin;
