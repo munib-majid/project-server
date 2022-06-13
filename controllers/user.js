@@ -2,11 +2,11 @@ const bcrypt= require("bcrypt");
 const {UserModel}=require("../models");
 const jwt = require("jsonwebtoken");
 const ErrorResponse = require("../utils/error.js")
-const {signupSchema}=require("../utils/validation.js")
+const {signupSchema,loginSchema}=require("../utils/validation.js")
 class UserController{
     async signin(req, res, next) {
-       
-          const { email, password } = req.body;
+          const value=await loginSchema.validateAsync(req.body);
+          const { email, password } = value;
           const user = await UserModel.findOne({ email });
           if (user) {
             const result = await bcrypt.compare(password, user.password);
