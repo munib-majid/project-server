@@ -17,7 +17,7 @@ const signupSchema = Joi.object({
     confirm_password: Joi.ref('password'),
 
     email: Joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).external(async (email)=>{
+        .email().external(async (email)=>{
             let user=await UserModel.findOne({email});
             if(user){
                 throw new Error("Email Already Exists!");
@@ -27,7 +27,7 @@ const signupSchema = Joi.object({
 const loginSchema = Joi.object({
   
     email: Joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+        .email(),
         password:Joi.string()
         .required(),
 });
