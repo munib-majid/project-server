@@ -2,7 +2,7 @@ const bcrypt= require("bcrypt");
 const {UserModel}=require("../models");
 const jwt = require("jsonwebtoken");
 const ErrorResponse = require("../utils/error.js")
-
+const {signupSchema}=require("../utils/validation.js")
 class UserController{
     async signin(req, res, next) {
        
@@ -27,14 +27,11 @@ class UserController{
         
       }
     async signup(req,res){
-            const { first_name, last_name, email, password } = req.body;
-            console.log( { first_name, last_name, email, password });
+          const value =await signupSchema.validateAsync(req.body);
              bcrypt.genSalt(10, function (err, salt) {
-              bcrypt.hash(password, salt, async (err, hash) => {
+              bcrypt.hash(value.password, salt, async (err, hash) => {
                 const user = new UserModel({
-                  first_name,
-                  last_name,
-                  email,
+                  ...value,
                   password: hash,
                 });
       
