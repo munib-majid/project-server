@@ -14,7 +14,7 @@ class CategoryController{
         const {id}=req.params;
         const value=await categorySchema.validateAsync({...req.body,id});
         const { name } = value;
-        const category=await CategoryModel.findOneAndUpdate(id,{name}, {
+        const category=await CategoryModel.findOneAndUpdate({_id:id},{name}, {
           new: true
         })
         return res
@@ -29,14 +29,14 @@ class CategoryController{
   }
   async getById(req, res, next) {
     const {id}=req.params;
-    const category=await CategoryModel.findOne({id})
+    const category=await CategoryModel.findOne({_id:id})
     return res
     .status(200)
     .json({success:true, message: "Successfull",data: {category} });
 }
 async deleteById(req, res, next) {
   const {id}=req.params;
-  const category=await CategoryModel.findOne({id});
+  const category=await CategoryModel.findOne({_id:id});
   const brand=await BrandModel.findOne({category});
   const product=await ProductModel.findOne({brand});
   console.log({brand,product});

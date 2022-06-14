@@ -26,7 +26,7 @@ class ProductController{
         const {id}=req.params;
         const {name,description,price,brand_id}=req.body
         const value=await productSchema.validateAsync(req.body);
-        const product=await ProductModel.findOneAndUpdate(id,{name,description,price,brand:brand_id}, {
+        const product=await ProductModel.findOneAndUpdate({_id:id},{name,description,price,brand:brand_id}, {
           new: true
         })
         return res
@@ -34,19 +34,40 @@ class ProductController{
         .json({success:true, message: "Successfull",data: {product} });
     }
     async getAll(req, res, next) {
+      let {category_id,brand_id}=req.query;
       const products=await ProductModel.find().populate({
         path : 'brand',
         populate : {
           path : 'category'
         }
       }).exec()
+      let returnProducts=products.filter((el)=>{
+        if(category_id && brand_id){
+          return el.brand.category._id==category_id && el.brand._id==brand_id;
+        }
+        if(category_id){
+          return el.brand.category._id==category_id
+        }
+        if(brand_id){
+          return el.brand._id==brand_id
+        }
+        return true;
+      })
+      let brandsDistinct=[];
+      let brands=[];
+      products.forEach((el)=>{
+        if(!brandsDistinct.includes(el.brand._id)){
+          brandsDistinct.push(el.brand._id);
+          brands.push(el.brand)
+        }
+      })
       return res
       .status(200)
-      .json({success:true, message: "Successfull",data: {products} });
+      .json({success:true, message: "Successfull",data: {products:returnProducts,brands} });
   }
   async getById(req, res, next) {
     const {id}=req.params;
-    const product=await ProductModel.findOne({id}).populate({
+    const product=await ProductModel.findOne({_id:id}).populate({
       path : 'brand',
       populate : {
         path : 'category'
@@ -58,7 +79,7 @@ class ProductController{
 }
 async deleteById(req, res, next) {
   const {id}=req.params;
-  const product=await ProductModel.findOne({id});
+  const product=await ProductModel.findOne({_id:id});
   for(let i in product.images) {
     const path = product.images[i];
     try {

@@ -14,7 +14,7 @@ class BrandController{
         const {id}=req.params;
         const value=await brandSchema.validateAsync({...req.body,id});
         const { name ,category_id} = value;
-        const brand=await BrandModel.findOneAndUpdate(id,{name,category:category_id}, {
+        const brand=await BrandModel.findOneAndUpdate({_id:id},{name,category:category_id}, {
           new: true
         })
         return res
@@ -29,14 +29,14 @@ class BrandController{
   }
   async getById(req, res) {
     const {id}=req.params;
-    const brand=await BrandModel.findOne({id}).populate("category")
+    const brand=await BrandModel.findOne({_id:id}).populate("category")
     return res
     .status(200)
     .json({success:true, message: "Successfull",data: {brand} });
 }
 async deleteById(req, res) {
   const {id}=req.params;
-  const brand=await BrandModel.findOne({id});
+  const brand=await BrandModel.findOne({_id:id});
   const product=await ProductModel.findOne({brand});
   if( product) {
     throw new ErrorResponse("Cannot delete brand because its product exists");
