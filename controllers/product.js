@@ -17,15 +17,16 @@ class ProductController{
       }
       const {name,description,price,brand_id}=req.body
           const value=await productSchema.validateAsync({name,description,price,brand_id});
-          const product=await ProductModel.create({...value,images})
+          const product=await ProductModel.create({name,description,price,brand:brand_id,images})
           return res
           .status(200)
           .json({success:true, message: "Successfull",data: {product} });
       }
       async update(req, res, next) {
         const {id}=req.params;
+        const {name,description,price,brand_id}=req.body
         const value=await productSchema.validateAsync(req.body);
-        const product=await ProductModel.findOneAndUpdate(id,{...value}, {
+        const product=await ProductModel.findOneAndUpdate(id,{name,description,price,brand:brand_id}, {
           new: true
         })
         return res
@@ -33,14 +34,24 @@ class ProductController{
         .json({success:true, message: "Successfull",data: {product} });
     }
     async getAll(req, res, next) {
-      const products=await ProductModel.find()
+      const products=await ProductModel.find().populate({
+        path : 'brand',
+        populate : {
+          path : 'category'
+        }
+      }).exec()
       return res
       .status(200)
       .json({success:true, message: "Successfull",data: {products} });
   }
   async getById(req, res, next) {
     const {id}=req.params;
-    const product=await ProductModel.findOne({id})
+    const product=await ProductModel.findOne({id}).populate({
+      path : 'brand',
+      populate : {
+        path : 'category'
+      }
+    }).exec()
     return res
     .status(200)
     .json({success:true, message: "Successfull",data: {product} });
