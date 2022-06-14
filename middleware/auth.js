@@ -9,7 +9,8 @@ const auth = asyncHandler(async (req, res, next) => {
 
   }
   try {
-    const { id } = jwt.verify(token, "secret");
+    let tempToken=token.split("Bearer ");
+    const { id } = jwt.verify(tempToken[1], "secret");
     const user = await UserModel.findById(id);
 
     if (!user) {

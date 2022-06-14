@@ -1,12 +1,12 @@
-const path = require("path");
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const fs = require("fs");
-const config = dotenv.config();
-const errorHandler = require("./middleware/error-handler.js")
-const multer = require("multer");
+const path = require("path"); // for paths functions
+const express = require("express");//server working
+const mongoose = require("mongoose"); //this is lib to use mongodb
+const cors = require("cors");//cross origen ressouse sharing is for sharing data across two diff domains
+const dotenv = require("dotenv").config();//this is to use moongose link online 
+const fs = require("fs"); //for file handling update edit read delete
+const errorHandler = require("./middleware/error-handler.js") //error handler that we made 
+const multer = require("multer");// form data req k liye
+//this is function to upload images  
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads");
@@ -27,21 +27,23 @@ const upload = multer({ storage: storage, fileFilter: (req, file, cb) => {
         return cb(err);
     }
 }, });
+//net se uthaya 
 const {
   UserRoutes,ProductRoutes,CategoryRoutes,BrandRoutes,
 } = require("./routes");
 const app = express();
-const PORT = process.env.PORT || 5000;
+let PORT = process.env.PORT || 5000;
 app.use(cors());
-app.use(upload.array("images"))
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(upload.array("images"))//req for form data 
+app.use(express.urlencoded({ extended: true }));//req for urlencoded
+app.use(express.json());//req for json body
 app.use("/user", UserRoutes);
 app.use("/brand", BrandRoutes);
 app.use("/category", CategoryRoutes);
 app.use("/product", ProductRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));//imgs ko as a route get krny k liye 
 app.use(errorHandler);
+//moongoose connect horhi hai agr connect hojati to server start hojata 
 mongoose
   .connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,

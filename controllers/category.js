@@ -3,14 +3,14 @@ const {UserModel,CategoryModel,BrandModel,ProductModel}=require("../models");
 const ErrorResponse = require("../utils/error.js")
 const {categorySchema}=require("../utils/validation.js")
 class CategoryController{
-    async create(req, res, next) {
+    async create(req, res) {
           const value=await categorySchema.validateAsync(req.body);
           const category=await CategoryModel.create(value)
           return res
           .status(200)
           .json({success:true, message: "Successfull",data: {category} });
       }
-      async update(req, res, next) {
+      async update(req, res) {
         const {id}=req.params;
         const value=await categorySchema.validateAsync({...req.body,id});
         const { name } = value;

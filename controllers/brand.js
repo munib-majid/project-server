@@ -3,14 +3,14 @@ const {UserModel,CategoryModel,BrandModel,ProductModel}=require("../models");
 const ErrorResponse = require("../utils/error.js")
 const {brandSchema}=require("../utils/validation.js")
 class BrandController{
-    async create(req, res, next) {
+    async create(req, res) {
           const value=await brandSchema.validateAsync(req.body);
           const brand=await BrandModel.create({name:value.name,category:value.category_id})
           return res
           .status(200)
           .json({success:true, message: "Successfull",data: {brand} });
       }
-      async update(req, res, next) {
+      async update(req, res) {
         const {id}=req.params;
         const value=await brandSchema.validateAsync({...req.body,id});
         const { name ,category_id} = value;
@@ -21,20 +21,20 @@ class BrandController{
         .status(200)
         .json({success:true, message: "Successfull",data: {brand} });
     }
-    async getAll(req, res, next) {
+    async getAll(req, res) {
       const brands=await BrandModel.find().populate("category")
       return res
       .status(200)
       .json({success:true, message: "Successfull",data: {brands} });
   }
-  async getById(req, res, next) {
+  async getById(req, res) {
     const {id}=req.params;
     const brand=await BrandModel.findOne({id}).populate("category")
     return res
     .status(200)
     .json({success:true, message: "Successfull",data: {brand} });
 }
-async deleteById(req, res, next) {
+async deleteById(req, res) {
   const {id}=req.params;
   const brand=await BrandModel.findOne({id});
   const product=await ProductModel.findOne({brand});
