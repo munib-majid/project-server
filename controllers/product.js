@@ -34,8 +34,12 @@ class ProductController{
         .json({success:true, message: "Successfull",data: {product} });
     }
     async getAll(req, res, next) {
-      let {category_id,brand_id}=req.query;
-      const products=await ProductModel.find().populate({
+      let {category_id,brand_id,name}=req.query;
+      let find={};
+      if(name){
+        find={...find,name}
+      }
+      const products=await ProductModel.find({...find}).populate({
         path : 'brand',
         populate : {
           path : 'category'
